@@ -64,31 +64,6 @@ aggrid <- function(data,
   }
   data$rowid <- seq_len(n_row)
 
-  column_defs <- purrr::imap(data, function(x, i) {
-    filterParams <- list(maxNumConditions = 5)
-    if (is.factor(x) && isTRUE(server)) {
-      filterParams$values <- levels(x)
-    }
-    if (inherits(x, "Date")) {
-      filterParams$comparator <- date_comparator()
-    }
-    list(
-      field = i,
-      filter = to_aggrid_filter(class(x)),
-      filterParams = filterParams,
-      hide = i == "rowid",
-      suppressColumnsToolPanel = i == "rowid"
-    )
-  })
-
-  if (isTRUE(checkboxSelection)) {
-    column_defs[[1]] <- c(
-      column_defs[[1]],
-      list(checkboxSelection = TRUE,
-           headerCheckboxSelection = rowSelection != "single")
-    )
-  }
-
   # default rowSelected
   if (!is.null(selectedRows)) {
     if (rowSelection == "single" && length(selectedRows) > 1) {
@@ -136,7 +111,6 @@ aggrid <- function(data,
 
   x <- list(
     gridOptions = list(
-      columnDefs = column_defs,
       suppressRowClickSelection = suppressRowClickSelection,
       rowSelection = rowSelection,
       enableRangeSelection = TRUE,
